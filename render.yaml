@@ -1,0 +1,18 @@
+# Render configuration for RAGmind (always-on Streamlit web service).
+# This tells Render how to install and run the app. When you connect this repo
+# to Render and pick a paid instance type, the app stays awake 24/7.
+
+services:
+  - type: web
+    name: ragmind
+    runtime: python
+    plan: starter            # the paid always-on tier (~$7/mo); never sleeps
+    buildCommand: "pip install -r requirements.txt"
+    # Streamlit must bind to the port Render provides ($PORT) and to 0.0.0.0,
+    # and run headless (no attempt to open a local browser) in the cloud.
+    startCommand: "streamlit run app/streamlit_app.py --server.port $PORT --server.address 0.0.0.0 --server.headless true --server.enableCORS false --server.enableXsrfProtection false"
+    envVars:
+      - key: GEMINI_API_KEY
+        sync: false          # you paste the secret value in the Render dashboard
+      - key: PYTHON_VERSION
+        value: "3.12.0"      # pin a stable Python; 3.14 can break some wheels
